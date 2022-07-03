@@ -11,6 +11,4 @@ RUN npm install --production
 
 COPY . .
 
-RUN ls -la
-
 CMD ["node", "src/index.js"]
