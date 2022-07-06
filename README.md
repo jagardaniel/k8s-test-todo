@@ -5,8 +5,6 @@ This is more of a test repository to become familiar with with basic programming
 
 ### Build and run in your local environment
 
-Both the API and the todo application requires a LTS version of [Node.js](https://nodejs.org/en/) to build and run.
-
 Clone the repository
 ```bash
 $ git clone https://github.com/jagardaniel/k8s-test-todo.git
@@ -14,24 +12,6 @@ $ cd k8s-test-todo/
 ```
 
 #### Todo API
-The API is using the Express framework for Node.js. Most of it is based on this [gist](https://gist.github.com/colinskow/30ce0bf290db9b642ca456a15342f788). It stores everything in memory for now.
-
-Enter the directory and install requirements with npm
-```bash
-$ cd todo-api/
-todo-api$ npm install
-```
-
-You should then be able to run it
-```bash
-todo-api$ node src/index.js
-```
-
-...and reach it
-```bash
-$ curl localhost:5000/api/tasks
-[{"id":1,"title":"Eat food","completed":true},{"id":2,"title":"Install something","completed":false},{"id":3,"title":"Eat food again","completed":true}]
-```
 
 #### Todo Web
 The frontend is written in React. Mozillas React [tutorial](https://developer.mozilla.org/en-US/docs/Learn/Tools_and_testing/Client-side_JavaScript_frameworks/React_getting_started) and [this](https://github.com/imnileshd/react-todo-app) repository has been two great resources for my desperate attempt to create something that actually starts.
