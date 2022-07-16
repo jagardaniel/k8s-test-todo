@@ -26,7 +26,7 @@ type todoServer struct {
 	service TodoService
 }
 
-var ErrNotFound = errors.New("resource was not found")
+var ErrNotFound = errors.New("task was not found")
 
 func NewTodoServer(service TodoService) *todoServer {
 	return &todoServer{service: service}
