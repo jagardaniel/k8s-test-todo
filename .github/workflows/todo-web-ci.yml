@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - 'todo-web/**'
+  workflow_dispatch:
 
 jobs:
   build-image:
@@ -17,7 +18,7 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      - name: Build and push
+      - name: Build container
         uses: docker/build-push-action@v3
         with:
           context: todo-web/
