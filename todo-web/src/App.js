@@ -34,6 +34,7 @@ function App() {
       body: JSON.stringify({title: title})
     };
 
+    // TODO: Handle errors in a better way
     fetch("/api/tasks", requestOptions)
       .then(res => res.json())
       .then(
@@ -47,18 +48,22 @@ function App() {
   }
 
   function deleteTask(id) {
+    // TODO: Handle errors in a better way
     fetch("/api/tasks/" + id, {method: "DELETE"})
       .then(
         () => getTasks()
       );
   }  
 
-  function toggleTaskCompleted(id, completed) {
-    if (completed) {
-      fetch("/api/tasks/" + id + "/completed", {method: "DELETE"})
-    } else {
-      fetch("/api/tasks/" + id + "/completed", {method: "POST"})
-    }
+  function toggleTaskCompleted(id, title, completed) {
+    const requestOptions = {
+      method: "PUT",
+      headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({id: id, title: title, completed: !completed})
+    };
+
+    // TODO: Handle errors in a better way
+    fetch("/api/tasks/" + id, requestOptions)
   }
 
   function renderTaskList() {

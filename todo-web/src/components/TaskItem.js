@@ -6,7 +6,7 @@ function TaskItem(props) {
         className="form-check-input me-3"
         type="checkbox" value=""
         defaultChecked={props.completed}
-        onChange={() => props.toggleTaskCompleted(props.id, props.completed)}
+        onChange={() => props.toggleTaskCompleted(props.id, props.title, props.completed)}
       />
       {props.title}
       <button
