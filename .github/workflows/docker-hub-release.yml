@@ -3,7 +3,7 @@ name: CI to Docker Hub
 on:
   push:
     tags:
-      - "*.*.*"
+      - "v*"
 
 jobs:
   build:
@@ -21,13 +21,13 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
 
-      #- name: Build and push todo-api
-      #  id: docker_build_api
-      #  uses: docker/build-push-action@v3
-      #  with:
-      #    context: todo-api/
-      #    push: true
-      #    tags: ${{ secrets.DOCKER_HUB_USERNAME }}/todo-api:latest
+      - name: Build and push todo-api
+        id: docker_build_api
+        uses: docker/build-push-action@v3
+        with:
+          context: todo-api/
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/todo-api:latest
 
       - name: Build and push todo-web
         id: docker_build_web
@@ -37,8 +37,8 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/todo-web:latest
 
-      #- name: Image digest todo-api
-      #  run: echo ${{ steps.docker_build_api.outputs.digest }}
+      - name: Image digest todo-api
+        run: echo ${{ steps.docker_build_api.outputs.digest }}
 
       - name: Image digest todo-web
         run: echo ${{ steps.docker_build_web.outputs.digest }}
