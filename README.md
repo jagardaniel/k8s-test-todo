@@ -104,3 +104,99 @@ service "todo-api" deleted
 deployment.apps "todo-web" deleted
 service "todo-web" deleted
 ```
+
+### Red Hat OpenShift
+
+Red Hat provides a 30-day sandbox environment for OpenShift which is great for experimenting and learning Kubernetes and OpenShift. More information [here](https://developers.redhat.com/developer-sandbox/activities). Lets try and push our two containers using their CLI tool. I don't know if this is the "recommended" way to deploy applications in OpenShift.
+
+After we have created a sandbox environment we need to install the `oc` CLI tool. Instructions [here](https://docs.openshift.com/container-platform/4.7/cli_reference/openshift_cli/getting-started-cli.html).
+
+
+Use `oc login` to login with your token. You can find the complete login command if you click on your username in the right top corner from the web interface and then select `Copy login command`.
+```bash
+$ oc login --token=YOURTOKENHERE --server=https://api.sandbox.xxxx.xx.openshiftapps.com:6443
+Logged into "https://api.sandbox.xxxx.xx.openshiftapps.com:6443" as "jagardaniel" using the token provided.
+
+You have one project on this server: "jagardaniel-dev"
+
+Using project "jagardaniel-dev".
+```
+
+We can use the command `oc new-app image-repo-url` to create both our applications. The tool is clever and can figure out name, language, port and other things based on the image. It then creates a deployment, service and an ImageStream(?) in OpenShift for us. If you run the command with `-o yaml` you can see the definition without creating the application.
+
+```bash
+# Deploy todo-api
+$ oc new-app docker.io/jagardaniel/todo-api
+--> Found container image 81d61ca (3 hours old) from docker.io for "docker.io/jagardaniel/todo-api"
+[...]
+
+# Deploy todo-web
+$ oc new-app docker.io/jagardaniel/todo-web
+--> Found container image f54aa95 (3 hours old) from docker.io for "docker.io/jagardaniel/todo-web"
+[...]
+
+# Verify
+$ oc get deployments,pods,services
+NAME                       READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/todo-api   1/1     1            1           11m
+deployment.apps/todo-web   1/1     1            1           6m43s
+
+NAME                            READY   STATUS    RESTARTS   AGE
+pod/todo-api-7c5d759756-7b4c8   1/1     Running   0          11m
+pod/todo-web-864ddf86d9-rqkwv   1/1     Running   0          6m43s
+
+NAME               TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+service/todo-api   ClusterIP   172.30.188.46    <none>        8000/TCP   11m
+service/todo-web   ClusterIP   172.30.174.250   <none>        8080/TCP   6m43s
+```
+
+We then need to create two routes so we can reach them externally.
+
+```bash
+# Create route for the todo-api service
+$ oc expose --hostname todo-test.bottenskrap.se --path /api service/todo-api
+route.route.openshift.io/todo-api exposed
+
+# Create route for the todo-web service
+$ oc expose --hostname todo-test.bottenskrap.se service/todo-web
+route.route.openshift.io/todo-web exposed
+
+# Verify
+$ oc get routes
+NAME       HOST/PORT                  PATH   SERVICES   PORT       TERMINATION   WILDCARD
+todo-api   todo-test.bottenskrap.se   /api   todo-api   8000-tcp                 None
+todo-web   todo-test.bottenskrap.se          todo-web   8080-tcp                 None
+```
+
+We also need to create a CNAME record that points our specified hostname (`todo-test.bottenskrap.se` in this example) to the "Router canonical hostname". You can use `oc describe` to find it.
+
+```bash
+$ oc describe route/todo-api | grep -A 1 Requested
+Requested Host:		todo-test.bottenskrap.se
+			   exposed on router default (host router-default.apps.sandbox.xxxx.xx.openshiftapps.com) 39 minutes ago
+```
+
+So in the example above it would be `router-default.apps.sandbox.xxxx.xx.openshiftapps.com)`. So a query should look something like this:
+
+```bash
+$ dig +short todo-test.bottenskrap.se
+router-default.apps.sandbox.xxxx.xx.openshiftapps.com.
+[...]
+```
+
+And you should now be able to visit the hostname in a browser!
+
+When you get bored you can remove them with `oc delete`.
+```bash
+$ oc delete all --selector app=todo-web
+service "todo-web" deleted
+deployment.apps "todo-web" deleted
+imagestream.image.openshift.io "todo-web" deleted
+route.route.openshift.io "todo-web" deleted
+
+$ oc delete all --selector app=todo-api
+service "todo-api" deleted
+deployment.apps "todo-api" deleted
+imagestream.image.openshift.io "todo-api" deleted
+route.route.openshift.io "todo-api" deleted
+```
