@@ -18,7 +18,7 @@ spec:
       - name: todo-web
         image: jagardaniel/todo-web:latest
         ports:
-        - containerPort: 80
+        - containerPort: 8080
 ---
 apiVersion: v1
 kind: Service
@@ -28,4 +28,4 @@ spec:
   selector:
     app: todo-web
   ports:
-  - port: 80
+  - port: 8080

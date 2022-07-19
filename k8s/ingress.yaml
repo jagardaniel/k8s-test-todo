@@ -13,7 +13,7 @@ spec:
               service:
                 name: todo-web
                 port:
-                  number: 80
+                  number: 8080
           - path: /api
             pathType: Prefix
             backend:
