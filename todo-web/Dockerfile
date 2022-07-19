@@ -15,8 +15,8 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Runtime
-FROM nginx:stable-alpine
+FROM nginxinc/nginx-unprivileged:stable-alpine
 
 COPY --from=build-env /app/build /usr/share/nginx/html
 
-EXPOSE 80
+EXPOSE 8080
